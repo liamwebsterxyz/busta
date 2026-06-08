@@ -4,7 +4,8 @@ use std::io::{Read, Write};
 use std::net::TcpListener;
 use std::time::Duration;
 
-use tauri::{AppHandle, Emitter};
+use tauri::{AppHandle, Emitter, Manager};
+use tauri_plugin_autostart::MacosLauncher;
 
 /// Start a one-shot HTTP loopback server on `127.0.0.1` on a random free port,
 /// returning that port to the caller. When the user's browser is redirected
@@ -72,7 +73,31 @@ pub fn run() {
         // Persists window size, position, maximized, and fullscreen state
         // across app launches.
         .plugin(tauri_plugin_window_state::Builder::default().build())
+        // Launch at login. The frontend calls `enable()` on first run to opt
+        // the user in; `LaunchAgent` is the macOS-recommended mechanism.
+        .plugin(tauri_plugin_autostart::init(
+            MacosLauncher::LaunchAgent,
+            None,
+        ))
+        // macOS convention: red-X / Cmd-W hides the window to the dock
+        // instead of quitting. Cmd-Q still quits.
+        .on_window_event(|window, event| {
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                let _ = window.hide();
+                api.prevent_close();
+            }
+        })
         .invoke_handler(tauri::generate_handler![start_oauth_server])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|app, event| {
+            // Bring the window back when the user clicks the dock icon and no
+            // windows are visible (the natural counterpart to hide-on-close).
+            if let tauri::RunEvent::Reopen { has_visible_windows: false, .. } = event {
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.set_focus();
+                }
+            }
+        });
 }

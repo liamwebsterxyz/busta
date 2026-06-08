@@ -1,4 +1,5 @@
-import { type ReactElement } from "react";
+import { useEffect, type ReactElement } from "react";
+import { enable, isEnabled } from "@tauri-apps/plugin-autostart";
 import { AppShell } from "./components/layout/AppShell";
 import { ErrorBoundary } from "./components/layout/ErrorBoundary";
 import { WeekBoard } from "./components/board/WeekBoard";
@@ -31,6 +32,7 @@ function Layout() {
 
 export default function App() {
   useGoogleSync();
+  useAutoLaunch();
   return (
     <ErrorBoundary>
       <HotkeyProvider>
@@ -43,4 +45,29 @@ export default function App() {
       </HotkeyProvider>
     </ErrorBoundary>
   );
+}
+
+/** Opt the app into launch-at-login on the very first run. The flag is sticky
+ *  so a later user-initiated disable (via System Settings) isn't undone on the
+ *  next launch. */
+const AUTOSTART_BOOTSTRAP_KEY = "busta:autostart-bootstrapped";
+
+function useAutoLaunch() {
+  useEffect(() => {
+    if (localStorage.getItem(AUTOSTART_BOOTSTRAP_KEY) === "true") return;
+    let cancelled = false;
+    (async () => {
+      try {
+        if (!(await isEnabled())) await enable();
+        if (!cancelled) {
+          localStorage.setItem(AUTOSTART_BOOTSTRAP_KEY, "true");
+        }
+      } catch {
+        // No-op outside Tauri (e.g., when running `npm run dev` in a browser).
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 }
