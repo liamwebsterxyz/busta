@@ -1,0 +1,160 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: oklch(99% 0 0);
+  --color-surface: oklch(100% 0 0);
+  --color-surface-muted: oklch(97% 0.003 250);
+  --color-border: oklch(93% 0.004 250);
+  --color-border-strong: oklch(87% 0.005 250);
+  --color-text: oklch(20% 0 0);
+  --color-text-muted: oklch(50% 0 0);
+  --color-text-subtle: oklch(65% 0 0);
+  --color-accent: oklch(60% 0.18 280);
+  --color-accent-soft: oklch(95% 0.04 280);
+  --color-today: oklch(94% 0.06 95);
+  --color-today-strong: oklch(70% 0.14 75);
+  --color-complete: oklch(70% 0.1 150);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text",
+    "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", monospace;
+
+  /* Bump global radii — Linear's recent direction is softer/rounder.
+     Affects every Tailwind `rounded-*` utility automatically. */
+  --radius-sm: 0.3125rem; /* 5px */
+  --radius-md: 0.5rem;    /* 8px */
+  --radius-lg: 0.625rem;  /* 10px */
+  --radius-xl: 0.875rem;  /* 14px */
+  --radius-2xl: 1.125rem; /* 18px */
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+input,
+textarea {
+  font: inherit;
+}
+
+/* --- Tiptap notes editor ------------------------------------------------- */
+.busta-prose {
+  outline: none;
+  min-height: 200px;
+  padding: 0.75rem;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-text);
+}
+
+.busta-prose > * + * {
+  margin-top: 0.5rem;
+}
+
+.busta-prose h1 {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-top: 0.75rem;
+}
+.busta-prose h2 {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-top: 0.75rem;
+}
+.busta-prose h3 {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.busta-prose ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.busta-prose ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+.busta-prose li > p {
+  margin: 0;
+}
+
+.busta-prose blockquote {
+  border-left: 2px solid var(--color-border-strong);
+  padding-left: 0.75rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.busta-prose code {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 0.0625rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.busta-prose pre {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 12px;
+  overflow-x: auto;
+}
+.busta-prose pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.busta-prose a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-color: oklch(60% 0.18 280 / 40%);
+  text-underline-offset: 2px;
+}
+.busta-prose a:hover {
+  text-decoration-color: var(--color-accent);
+}
+
+.busta-prose hr {
+  border: 0;
+  border-top: 1px solid var(--color-border);
+  margin: 0.75rem 0;
+}
+
+.busta-prose strong {
+  font-weight: 600;
+}
+
+/* Placeholder rendered by @tiptap/extension-placeholder */
+.busta-prose p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--color-text-subtle);
+  pointer-events: none;
+  height: 0;
+  float: left;
+}
+
